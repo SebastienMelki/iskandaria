@@ -1,11 +1,7 @@
 package main
 
-import (
-	"fmt"
-	songv1 "github.com/SebastienMelki/iskandaria/api/contracts/song/v1"
-)
+import "os"
 
 func main() {
-	fmt.Println("Hello World")
-	_ = songv1.GetSongsRequest{SongIdList: nil}
+	os.Exit(0)
 }

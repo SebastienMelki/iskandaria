@@ -29,23 +29,23 @@ plugins:
     opt: module=github.com/SebastienMelki/iskandaria/api
   
   # Custom oneof helper utilities
-  - local: ../sebuf/bin/protoc-gen-go-oneof-helper
+  - local: protoc-gen-go-oneof-helper
     out: ./api
     opt:
       - module=github.com/SebastienMelki/iskandaria/api
 
   # OpenAPI v3 documentation generation in YAML format
-  - local: ../sebuf/bin/protoc-gen-openapiv3
+  - local: protoc-gen-openapiv3
     out: ./api-docs
 
   # OpenAPI v3 documentation generation in JSON format
-  - local: ../sebuf/bin/protoc-gen-openapiv3
+  - local: protoc-gen-openapiv3
     out: ./api-docs
     opt:
       - format=json
   
   # HTTP service generation (custom)
-  - local: ../sebuf/bin/protoc-gen-go-http
+  - local: protoc-gen-go-http
     out: ./api
     opt:
       - module=github.com/SebastienMelki/iskandaria/api
