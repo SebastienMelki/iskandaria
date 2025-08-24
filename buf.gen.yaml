@@ -1,0 +1,48 @@
+# Buf code generation configuration v2
+version: v2
+
+# Managed mode - automatically manages go_package options
+managed:
+  enabled: true
+  override:
+    # Set default Go package prefix for generated code
+    - file_option: go_package_prefix
+      value: github.com/SebastienMelki/iskandaria/contracts/api
+    # Disable package prefix for Google APIs (use their standard packages)
+    - file_option: go_package_prefix
+      module: buf.build/googleapis/googleapis
+      value: ""
+    # Disable package prefix for protovalidate (use their standard packages)
+    - file_option: go_package_prefix
+      module: buf.build/bufbuild/protovalidate
+      value: ""
+
+# Local protoc plugins (installed via make install)
+plugins:
+  # Standard Go protobuf code generation
+  - local: protoc-gen-go
+    out: ./api
+    opt: module=github.com/SebastienMelki/iskandaria/contracts/api
+  
+  # Custom oneof helper utilities
+  - local: ../sebuf/bin/protoc-gen-go-oneof-helper
+    out: api
+    opt:
+      - module=github.com/SebastienMelki/iskandaria/contracts/api
+
+  # OpenAPI v3 documentation generation in YAML format
+  - local: ../sebuf/bin/protoc-gen-openapiv3
+    out: ./api-docs
+
+  # OpenAPI v3 documentation generation in JSON format
+  - local: ../sebuf/bin/protoc-gen-openapiv3
+    out: ./api-docs
+    opt:
+      - format=json
+  
+  # HTTP service generation (custom)
+  - local: ../sebuf/bin/protoc-gen-go-http
+    out: api
+    opt:
+      - module=github.com/SebastienMelki/iskandaria/contracts/api
+      - generate_mock=true
