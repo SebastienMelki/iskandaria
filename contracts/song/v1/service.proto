@@ -9,7 +9,7 @@ import "sebuf/http/headers.proto";
 // SongService provides operations for managing songs
 service SongService {
   option (sebuf.http.service_config) = { 
-    base_path: "/api/v1" 
+    base_path: "/api/song/v1"
   };
   
   // GetSongs retrieves a list of songs with optional filtering and pagination
