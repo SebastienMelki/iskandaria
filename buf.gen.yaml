@@ -7,7 +7,7 @@ managed:
   override:
     # Set default Go package prefix for generated code
     - file_option: go_package_prefix
-      value: github.com/SebastienMelki/iskandaria/contracts/api
+      value: github.com/SebastienMelki/iskandaria/api
     # Disable package prefix for Google APIs (use their standard packages)
     - file_option: go_package_prefix
       module: buf.build/googleapis/googleapis
@@ -16,19 +16,23 @@ managed:
     - file_option: go_package_prefix
       module: buf.build/bufbuild/protovalidate
       value: ""
+    # Disable package prefix for sebuf (use standard import path)
+    - file_option: go_package_prefix
+      module: buf.build/sebmelki/sebuf
+      value: ""
 
 # Local protoc plugins (installed via make install)
 plugins:
   # Standard Go protobuf code generation
   - local: protoc-gen-go
     out: ./api
-    opt: module=github.com/SebastienMelki/iskandaria/contracts/api
+    opt: module=github.com/SebastienMelki/iskandaria/api
   
   # Custom oneof helper utilities
   - local: ../sebuf/bin/protoc-gen-go-oneof-helper
-    out: api
+    out: ./api
     opt:
-      - module=github.com/SebastienMelki/iskandaria/contracts/api
+      - module=github.com/SebastienMelki/iskandaria/api
 
   # OpenAPI v3 documentation generation in YAML format
   - local: ../sebuf/bin/protoc-gen-openapiv3
@@ -42,7 +46,7 @@ plugins:
   
   # HTTP service generation (custom)
   - local: ../sebuf/bin/protoc-gen-go-http
-    out: api
+    out: ./api
     opt:
-      - module=github.com/SebastienMelki/iskandaria/contracts/api
+      - module=github.com/SebastienMelki/iskandaria/api
       - generate_mock=true
