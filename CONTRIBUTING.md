@@ -306,7 +306,7 @@ Current focus areas:
 - [Go Documentation](https://golang.org/doc/)
 - [Protocol Buffers](https://protobuf.dev/)
 - [Buf Documentation](https://docs.buf.build/)
-- [gRPC Go](https://grpc.io/docs/languages/go/)
+- [sebuf Documentation](https://github.com/SebastienMelki/sebuf)
 
 ## 🤝 Community
 

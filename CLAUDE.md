@@ -163,7 +163,7 @@ Pipeline includes:
 - **License**: MIT
 - **Main Dependencies**:
   - buf.build for protocol buffers
-  - sebuf for HTTP/gRPC code generation
+  - sebuf for HTTP code generation
   - golangci-lint for code quality
 
 ## Common Tasks

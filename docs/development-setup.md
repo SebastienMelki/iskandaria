@@ -35,7 +35,7 @@ This installs:
 - **golangci-lint** - Comprehensive Go linter
 - **go-test-coverage** - Coverage analysis and badge generation  
 - **protoc-gen-go** - Official Protocol Buffer Go plugin
-- **sebuf plugins** - Custom HTTP/gRPC code generation tools
+- **sebuf plugins** - Custom HTTP code generation tools
 
 ### Manual Tool Installation (if needed)
 
@@ -54,7 +54,7 @@ go install github.com/vladopajic/go-test-coverage/v2@latest
 # Protocol buffer Go generation
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
-# sebuf plugins for HTTP/gRPC generation
+# sebuf plugins for HTTP generation
 GOPROXY=direct go install github.com/SebastienMelki/sebuf/cmd/protoc-gen-go-oneof-helper@latest
 GOPROXY=direct go install github.com/SebastienMelki/sebuf/cmd/protoc-gen-go-http@latest  
 GOPROXY=direct go install github.com/SebastienMelki/sebuf/cmd/protoc-gen-openapiv3@latest

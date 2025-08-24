@@ -8,6 +8,13 @@
 
 Iskandaria aims to be a unified media repository and streaming platform for preserving and enjoying digital content - music, movies, series, audiobooks, and podcasts.
 
+## 🏗️ Built With
+
+- **[Go](https://golang.org/)** - High-performance backend services
+- **[Protocol Buffers](https://protobuf.dev/)** - Type-safe API contracts
+- **[Buf](https://buf.build/)** - Modern protobuf toolchain
+- **[sebuf](https://github.com/SebastienMelki/sebuf)** - Efficient HTTP code generation from protobuf definitions
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -24,7 +31,7 @@ cd iskandaria
 # Install dependencies and tools
 make install
 
-# Generate API contracts from protobuf definitions
+# Generate API contracts from protobuf definitions (powered by sebuf)
 make generate
 
 # Build the project
@@ -48,8 +55,8 @@ make coverage
 # Run linting
 make lint
 
-# Generate protobuf code
-make generate
+# Generate protobuf code and HTTP handlers
+make generate  # Uses sebuf for automatic endpoint generation
 
 # See all available commands
 make help

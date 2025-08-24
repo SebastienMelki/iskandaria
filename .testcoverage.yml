@@ -17,7 +17,7 @@ localPrefix: "github.com/SebastienMelki/iskandaria"
 exclude:
   files:
     - ".*\\.pb\\.go$"           # Protocol buffer generated files
-    - ".*\\.pb\\.gw\\.go$"      # gRPC gateway generated files  
+    - ".*\\.pb\\.gw\\.go$"      # HTTP gateway generated files  
     - ".*_gen\\.go$"            # Any generated files
     - ".*_generated\\.go$"      # Any generated files
     - ".*_test\\.go$"           # Test files

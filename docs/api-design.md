@@ -12,7 +12,7 @@ Iskandaria uses Protocol Buffers as the foundation for all API design, ensuring 
 
 ### 2. HTTP Mapping via sebuf
 - HTTP endpoints are generated from service definitions
-- Uses sebuf framework for HTTP/gRPC code generation
+- Uses sebuf framework for HTTP code generation
 - Configurable HTTP paths and methods
 - Automatic JSON serialization
 

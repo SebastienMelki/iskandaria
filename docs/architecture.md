@@ -118,7 +118,7 @@ Shared types across all services:
 - **Go 1.24.4**: Primary development language
 - **Protocol Buffers**: API definition and serialization
 - **Buf**: Protocol buffer toolkit for linting and generation
-- **sebuf**: Custom HTTP/gRPC code generation framework
+- **sebuf**: Custom HTTP code generation framework
 
 ### Development Tools
 - **golangci-lint**: Comprehensive code linting with 446-line configuration

@@ -29,7 +29,7 @@ This command installs:
 - golangci-lint (Code linting)
 - go-test-coverage (Coverage analysis)
 - protoc-gen-go (Protocol Buffer Go generation)
-- sebuf plugins (HTTP/gRPC code generation)
+- sebuf plugins (HTTP code generation)
 
 ### 3. Generate API Code
 
