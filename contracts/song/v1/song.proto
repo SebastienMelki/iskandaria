@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package song.v1;
+
+import "buf/validate/validate.proto";
+import "sebuf/http/annotations.proto";
+import "contracts/core/v1/ids.proto";
+import "contracts/core/v1/i18n.proto";
+
+// Song represents a music track
+message Song {
+  // Unique identifier for the song
+  core.v1.SongID id = 1;
+  
+  // Title of the song (localized)
+  core.v1.TranslatedString title = 2;
+  
+  // Artist identifier
+  core.v1.ArtistID artist_id = 3;
+  
+  // Album identifier (optional)
+  core.v1.AlbumID album_id = 4;
+  
+  
+  // Duration in seconds
+  int32 duration_seconds = 5 [
+    (buf.validate.field).int32.gt = 0,
+    (sebuf.http.field_examples) = {
+      values: ["355", "391", "183", "245", "198"]
+    }
+  ];
+  
+  // Release year (optional)
+  int32 release_year = 6 [
+    (buf.validate.field).int32.gte = 1900,
+    (sebuf.http.field_examples) = {
+      values: ["1975", "1976", "1971"]
+    }
+  ];
+}
+
+// Request message for getting songs
+message GetSongsRequest {
+  repeated core.v1.SongID song_id_list = 1 [
+    (buf.validate.field).repeated.min_items = 1,
+    (buf.validate.field).repeated.max_items = 50
+  ];
+}
+
+// Response message for getting songs
+message GetSongsResponse {
+  // List of songs
+  repeated Song songs = 1;
+}

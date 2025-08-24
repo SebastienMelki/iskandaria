@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package song.v1;
+
+import "contracts/song/v1/song.proto";
+import "sebuf/http/annotations.proto";
+import "sebuf/http/headers.proto";
+
+// SongService provides operations for managing songs
+service SongService {
+  option (sebuf.http.service_config) = { 
+    base_path: "/api/v1" 
+  };
+  
+  // GetSongs retrieves a list of songs with optional filtering and pagination
+  rpc GetSongs(GetSongsRequest) returns (GetSongsResponse) {
+    option (sebuf.http.config) = { 
+      path: "/songs" 
+    };
+  }
+}

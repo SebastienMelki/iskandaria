@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package core.v1;
+
+import "buf/validate/validate.proto";
+import "sebuf/http/annotations.proto";
+
+// Language represents supported languages in the system
+enum Language {
+  LANGUAGE_UNSPECIFIED = 0;
+  LANGUAGE_ARABIC = 1;
+  LANGUAGE_ENGLISH = 2;
+  LANGUAGE_FRENCH = 3;
+  LANGUAGE_SPANISH = 4;
+}
+
+// Translation represents a single language translation
+message Translation {
+  // Language code for this translation
+  Language language = 1 [
+    (buf.validate.field).enum = {
+      not_in: [0]
+    },
+    (sebuf.http.field_examples) = {
+      values: ["LANGUAGE_ENGLISH", "LANGUAGE_ARABIC", "LANGUAGE_FRENCH", "LANGUAGE_SPANISH"]
+    }
+  ];
+  
+  // Translated text content
+  string text = 2 [
+    (buf.validate.field).string = {
+      min_len: 1,
+      max_len: 1000
+    },
+    (sebuf.http.field_examples) = {
+      values: [
+        "Bohemian Rhapsody",
+        "رابسودي بوهيمي", 
+        "Rhapsodie bohémienne",
+        "Rapsodia bohemia",
+        "Hotel California",
+        "فندق كاليفورنيا",
+        "Hôtel California",
+        "Hotel California"
+      ]
+    }
+  ];
+}
+
+// TranslatedString represents a string in multiple languages
+message TranslatedString {
+  // List of translations for different languages
+  repeated Translation translations = 1 [
+    (buf.validate.field).repeated = {
+      min_items: 1,
+      max_items: 10
+    }
+  ];
+}
