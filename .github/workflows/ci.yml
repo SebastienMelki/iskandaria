@@ -1,0 +1,284 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  GO_VERSION: '1.24'
+  BUF_VERSION: 'latest'
+
+jobs:
+  lint:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+          args: ""
+          
+      - name: Run Go fmt check
+        run: |
+          fmt_output=$(gofmt -l .)
+          if [ -n "$fmt_output" ]; then
+            echo "::error::The following files need formatting:"
+            echo "$fmt_output" | while read -r file; do
+              echo "::error file=$file::File needs gofmt formatting"
+            done
+            exit 1
+          fi
+          
+      - name: Run Go vet
+        run: go vet ./...
+        
+      - name: Run Buf lint
+        run: |
+          if [ -d "contracts" ]; then
+            buf lint contracts/
+          else
+            echo "No contracts directory found, skipping buf lint"
+          fi
+
+  test:
+    name: Test (Go ${{ matrix.go-version }} - ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: ['1.24']
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+          
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Install dependencies
+        run: |
+          go mod download
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          
+      - name: Generate proto files
+        run: make generate
+        
+      - name: Run tests
+        run: ./scripts/run_tests.sh --verbose
+        shell: bash
+        
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-go${{ matrix.go-version }}
+          path: |
+            coverage/coverage.out
+            coverage/coverage.html
+            coverage/coverage.json
+            
+  coverage:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+          
+      - name: Download coverage from test job
+        uses: actions/download-artifact@v5
+        with:
+          name: test-results-ubuntu-latest-go1.24
+          path: ./coverage-download
+        continue-on-error: true
+          
+      - name: Setup Go for coverage tools
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          
+      - name: Install go-test-coverage
+        run: go install github.com/vladopajic/go-test-coverage/v2@latest
+        
+      - name: Check coverage file
+        run: |
+          if [ -f "coverage-download/coverage.out" ]; then
+            mkdir -p coverage
+            cp coverage-download/coverage.out coverage/coverage.out
+            echo "Coverage file found and copied"
+          elif [ -f "coverage-download/coverage/coverage.out" ]; then
+            mkdir -p coverage
+            cp coverage-download/coverage/coverage.out coverage/coverage.out
+            echo "Coverage file found in subfolder and copied"
+          else
+            echo "No coverage file found - this is expected for a new project"
+            echo "Add tests to enable coverage reporting"
+            exit 0
+          fi
+          
+      - name: Generate coverage badge and check thresholds
+        if: success()
+        run: |
+          if [ -f "coverage/coverage.out" ]; then
+            go-test-coverage --config=.testcoverage.yml || true
+          fi
+        continue-on-error: true
+          
+      - name: Upload coverage to Codecov
+        if: success() && github.event_name == 'pull_request'
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage/coverage.out
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true
+          
+      - name: Upload coverage reports
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage/
+            .testcoverage.yml
+        continue-on-error: true
+
+  build:
+    name: Build Binaries
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Install protoc-gen-go
+        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        
+      - name: Generate proto files
+        run: make generate
+        
+      - name: Build binaries
+        run: make build
+          
+      - name: Test binary execution
+        run: |
+          if [ -f "./bin/server" ]; then
+            ./bin/server --version || true
+          else
+            echo "Server binary not found - this is expected if not yet implemented"
+          fi
+          
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: bin/
+
+  proto-validation:
+    name: Protocol Buffer Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Buf build
+        run: |
+          if [ -d "contracts" ]; then
+            buf build contracts/
+          else
+            echo "No contracts directory found, skipping buf build"
+          fi
+          
+      - name: Buf format check
+        run: |
+          if [ -d "contracts" ]; then
+            buf format -d contracts/
+          else
+            echo "No contracts directory found, skipping buf format"
+          fi
+        continue-on-error: true
+          
+      - name: Check for breaking changes
+        if: github.event_name == 'pull_request' 
+        run: |
+          if [ -d "contracts" ]; then
+            buf breaking contracts/ --against '.git#branch=main' || true
+          fi
+        continue-on-error: true
+
+  status-check:
+    name: CI Status Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test, coverage, build, proto-validation]
+    if: always()
+    steps:
+      - name: Check CI status
+        run: |
+          echo "## CI Pipeline Summary"
+          echo ""
+          echo "- Lint: ${{ needs.lint.result }}"
+          echo "- Test: ${{ needs.test.result }}"
+          echo "- Coverage: ${{ needs.coverage.result }}"
+          echo "- Build: ${{ needs.build.result }}"
+          echo "- Proto Validation: ${{ needs.proto-validation.result }}"
+          
+          if [ "${{ needs.lint.result }}" != "success" ] || \
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.build.result }}" != "success" ]; then
+            echo ""
+            echo "❌ CI pipeline failed"
+            exit 1
+          else
+            echo ""
+            echo "✅ CI pipeline passed"
+          fi
