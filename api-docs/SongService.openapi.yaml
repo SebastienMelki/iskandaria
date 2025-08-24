@@ -1,0 +1,173 @@
+openapi: 3.1.0
+info:
+    title: SongService API
+    version: 1.0.0
+paths:
+    /api/v1/songs:
+        post:
+            tags:
+                - SongService
+            summary: GetSongs
+            description: GetSongs retrieves a list of songs with optional filtering and pagination
+            operationId: GetSongs
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetSongsRequest'
+                required: true
+            responses:
+                "200":
+                    description: Successful response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetSongsResponse'
+                default:
+                    description: Error response
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                    code:
+                                        type: integer
+components:
+    schemas:
+        GetSongsRequest:
+            type: object
+            properties:
+                songIdList:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SongID'
+                    maxItems: 50
+                    minItems: 1
+            description: Request message for getting songs
+        SongID:
+            type: object
+            properties:
+                value:
+                    type: string
+                    examples:
+                        - 550e8400-e29b-41d4-a716-446655440000
+                        - f47ac10b-58cc-4372-a567-0e02b2c3d479
+                        - 123e4567-e89b-12d3-a456-426614174000
+                        - 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+                        - 6ba7b811-9dad-11d1-80b4-00c04fd430c8
+                    format: uuid
+                    description: UUID value for the song identifier
+                    example: 550e8400-e29b-41d4-a716-446655440000
+            description: SongID represents a typed identifier for songs
+        GetSongsResponse:
+            type: object
+            properties:
+                songs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Song'
+            description: Response message for getting songs
+        Song:
+            type: object
+            properties:
+                id:
+                    $ref: '#/components/schemas/SongID'
+                title:
+                    $ref: '#/components/schemas/TranslatedString'
+                artistId:
+                    $ref: '#/components/schemas/ArtistID'
+                albumId:
+                    $ref: '#/components/schemas/AlbumID'
+                durationSeconds:
+                    exclusiveMinimum: false
+                    type: integer
+                    examples:
+                        - 355
+                        - 391
+                        - 183
+                        - 245
+                        - 198
+                    format: int32
+                    description: Duration in seconds
+                    example: 355
+                releaseYear:
+                    type: integer
+                    examples:
+                        - 1975
+                        - 1976
+                        - 1971
+                    minimum: 1900
+                    format: int32
+                    description: Release year (optional)
+                    example: 1975
+            description: Song represents a music track
+        TranslatedString:
+            type: object
+            properties:
+                translations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Translation'
+                    maxItems: 10
+                    minItems: 1
+            description: TranslatedString represents a string in multiple languages
+        Translation:
+            type: object
+            properties:
+                language:
+                    type: string
+                    enum:
+                        - LANGUAGE_UNSPECIFIED
+                        - LANGUAGE_ARABIC
+                        - LANGUAGE_ENGLISH
+                        - LANGUAGE_FRENCH
+                        - LANGUAGE_SPANISH
+                    description: Language represents supported languages in the system
+                text:
+                    type: string
+                    examples:
+                        - Bohemian Rhapsody
+                        - رابسودي بوهيمي
+                        - Rhapsodie bohémienne
+                        - Rapsodia bohemia
+                        - Hotel California
+                        - فندق كاليفورنيا
+                        - Hôtel California
+                        - Hotel California
+                    maxLength: 1000
+                    minLength: 1
+                    description: Translated text content
+                    example: Bohemian Rhapsody
+            description: Translation represents a single language translation
+        ArtistID:
+            type: object
+            properties:
+                value:
+                    type: string
+                    examples:
+                        - f6g7h8i9-j0k1-2345-6789-012345fghijk
+                        - g7h8i9j0-k1l2-3456-7890-123456ghijkl
+                        - h8i9j0k1-l2m3-4567-8901-234567hijklm
+                        - i9j0k1l2-m3n4-5678-9012-345678ijklmn
+                        - j0k1l2m3-n4o5-6789-0123-456789jklmno
+                    format: uuid
+                    description: UUID value for the artist identifier
+                    example: f6g7h8i9-j0k1-2345-6789-012345fghijk
+            description: ArtistID represents a typed identifier for artists
+        AlbumID:
+            type: object
+            properties:
+                value:
+                    type: string
+                    examples:
+                        - a1b2c3d4-e5f6-7890-1234-567890abcdef
+                        - b2c3d4e5-f6g7-8901-2345-678901bcdefg
+                        - c3d4e5f6-g7h8-9012-3456-789012cdefgh
+                        - d4e5f6g7-h8i9-0123-4567-890123defghi
+                        - e5f6g7h8-i9j0-1234-5678-901234efghij
+                    format: uuid
+                    description: UUID value for the album identifier
+                    example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+            description: AlbumID represents a typed identifier for albums
