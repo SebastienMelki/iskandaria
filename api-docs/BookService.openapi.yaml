@@ -1,20 +1,20 @@
 openapi: 3.1.0
 info:
-    title: SongService API
+    title: BookService API
     version: 1.0.0
 paths:
-    /api/song/v1/songs:
+    /api/book/v1/books:
         post:
             tags:
-                - SongService
-            summary: GetSongs
+                - BookService
+            summary: GetBooks
             description: GetSongs retrieves a list of songs with optional filtering and pagination
-            operationId: GetSongs
+            operationId: GetBooks
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/GetSongsRequest'
+                            $ref: '#/components/schemas/GetBooksRequest'
                 required: true
             responses:
                 "200":
@@ -22,7 +22,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/GetSongsResponse'
+                                $ref: '#/components/schemas/GetBooksResponse'
                 default:
                     description: Error response
                     content:
@@ -36,17 +36,17 @@ paths:
                                         type: integer
 components:
     schemas:
-        GetSongsRequest:
+        GetBooksRequest:
             type: object
             properties:
-                songIdList:
+                bookIdList:
                     type: array
                     items:
-                        $ref: '#/components/schemas/SongID'
+                        $ref: '#/components/schemas/BookID'
                     maxItems: 50
                     minItems: 1
-            description: Request message for getting songs
-        SongID:
+            description: Request message for getting books
+        BookID:
             type: object
             properties:
                 value:
@@ -60,38 +60,22 @@ components:
                     format: uuid
                     description: UUID value for the song identifier
                     example: 550e8400-e29b-41d4-a716-446655440000
-            description: SongID represents a typed identifier for songs
-        GetSongsResponse:
+            description: BookID represents a typed identifier for songs
+        GetBooksResponse:
             type: object
             properties:
-                songs:
+                books:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Song'
-            description: Response message for getting songs
-        Song:
+                        $ref: '#/components/schemas/Book'
+            description: Response message for getting books
+        Book:
             type: object
             properties:
                 id:
-                    $ref: '#/components/schemas/SongID'
+                    $ref: '#/components/schemas/BookID'
                 title:
                     $ref: '#/components/schemas/TranslatedString'
-                artistId:
-                    $ref: '#/components/schemas/ArtistID'
-                albumId:
-                    $ref: '#/components/schemas/AlbumID'
-                durationSeconds:
-                    exclusiveMinimum: false
-                    type: integer
-                    examples:
-                        - 355
-                        - 391
-                        - 183
-                        - 245
-                        - 198
-                    format: int32
-                    description: Duration in seconds
-                    example: 355
                 releaseYear:
                     type: integer
                     examples:
@@ -102,7 +86,7 @@ components:
                     format: int32
                     description: Release year (optional)
                     example: 1975
-            description: Song represents a music track
+            description: Book represents a book (no shit?)
         TranslatedString:
             type: object
             properties:
@@ -141,33 +125,3 @@ components:
                     description: Translated text content
                     example: Bohemian Rhapsody
             description: Translation represents a single language translation
-        ArtistID:
-            type: object
-            properties:
-                value:
-                    type: string
-                    examples:
-                        - f6g7h8i9-j0k1-2345-6789-012345fghijk
-                        - g7h8i9j0-k1l2-3456-7890-123456ghijkl
-                        - h8i9j0k1-l2m3-4567-8901-234567hijklm
-                        - i9j0k1l2-m3n4-5678-9012-345678ijklmn
-                        - j0k1l2m3-n4o5-6789-0123-456789jklmno
-                    format: uuid
-                    description: UUID value for the artist identifier
-                    example: f6g7h8i9-j0k1-2345-6789-012345fghijk
-            description: ArtistID represents a typed identifier for artists
-        AlbumID:
-            type: object
-            properties:
-                value:
-                    type: string
-                    examples:
-                        - a1b2c3d4-e5f6-7890-1234-567890abcdef
-                        - b2c3d4e5-f6g7-8901-2345-678901bcdefg
-                        - c3d4e5f6-g7h8-9012-3456-789012cdefgh
-                        - d4e5f6g7-h8i9-0123-4567-890123defghi
-                        - e5f6g7h8-i9j0-1234-5678-901234efghij
-                    format: uuid
-                    description: UUID value for the album identifier
-                    example: a1b2c3d4-e5f6-7890-1234-567890abcdef
-            description: AlbumID represents a typed identifier for albums

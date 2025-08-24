@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package book.v1;
+
+import "buf/validate/validate.proto";
+import "sebuf/http/annotations.proto";
+import "contracts/core/v1/ids.proto";
+import "contracts/core/v1/i18n.proto";
+
+// Book represents a book (no shit?)
+message Book {
+  // Unique identifier for the book
+  core.v1.BookID id = 1;
+  
+  // Title of the book (localized)
+  core.v1.TranslatedString title = 2;
+
+  // Release year (optional)
+  int32 release_year = 6 [
+    (buf.validate.field).int32.gte = 1900,
+    (sebuf.http.field_examples) = {
+      values: ["1975", "1976", "1971"]
+    }
+  ];
+}
+
+// Request message for getting books
+message GetBooksRequest {
+  repeated core.v1.BookID book_id_list = 1 [
+    (buf.validate.field).repeated.min_items = 1,
+    (buf.validate.field).repeated.max_items = 50
+  ];
+}
+
+// Response message for getting books
+message GetBooksResponse {
+  // List of books
+  repeated Book books = 1;
+}

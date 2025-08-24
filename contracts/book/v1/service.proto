@@ -1,21 +1,21 @@
 syntax = "proto3";
 
-package song.v1;
+package book.v1;
 
-import "contracts/song/v1/song.proto";
+import "contracts/book/v1/book.proto";
 import "sebuf/http/annotations.proto";
 import "sebuf/http/headers.proto";
 
-// SongService provides operations for managing songs
-service SongService {
+// BookService provides operations for managing books
+service BookService {
   option (sebuf.http.service_config) = { 
-    base_path: "/api/song/v1"
+    base_path: "/api/book/v1"
   };
   
   // GetSongs retrieves a list of songs with optional filtering and pagination
-  rpc GetSongs(GetSongsRequest) returns (GetSongsResponse) {
+  rpc GetBooks(GetBooksRequest) returns (GetBooksResponse) {
     option (sebuf.http.config) = { 
-      path: "/songs" 
+      path: "/books"
     };
   }
 }

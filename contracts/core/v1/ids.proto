@@ -5,6 +5,25 @@ package core.v1;
 import "buf/validate/validate.proto";
 import "sebuf/http/annotations.proto";
 
+
+// BookID represents a typed identifier for songs
+message BookID {
+  // UUID value for the song identifier
+  string value = 1 [
+    (buf.validate.field).string.uuid = true,
+    (sebuf.http.field_examples) = {
+      values: [
+        "550e8400-e29b-41d4-a716-446655440000",
+        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "123e4567-e89b-12d3-a456-426614174000",
+        "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "6ba7b811-9dad-11d1-80b4-00c04fd430c8"
+      ]
+    }
+  ];
+}
+
+
 // SongID represents a typed identifier for songs
 message SongID {
   // UUID value for the song identifier
