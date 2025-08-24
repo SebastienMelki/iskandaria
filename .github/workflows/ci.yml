@@ -52,12 +52,7 @@ jobs:
         run: go vet ./...
         
       - name: Run Buf lint
-        run: |
-          if [ -d "contracts" ]; then
-            buf lint contracts/
-          else
-            echo "No contracts directory found, skipping buf lint"
-          fi
+        run: buf lint
 
   test:
     name: Test (Go ${{ matrix.go-version }} - ${{ matrix.os }})
@@ -84,9 +79,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Install dependencies
-        run: |
-          go mod download
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        run: make install
           
       - name: Generate proto files
         run: make generate
