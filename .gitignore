@@ -1,0 +1,98 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Build output
+/bin/
+/dist/
+/build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Protocol Buffers
+*.pb.go
+*.pb.cc
+*.pb.h
+*.pb.java
+*.pb.py
+*.pb.ts
+*.pb.js
+
+# Protocol buffer generated files
+*_pb2.py
+*_pb2_grpc.py
+
+# SQL files (generated or temporary)
+*.sqlite
+*.sqlite3
+*.db
+*.sql.bak
+*.sql.tmp
+
+# Database connection files
+.env
+.env.local
+.env.production
+.env.test
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Coverage reports
+coverage.txt
+coverage.out
+coverage.html
+
+# Air live reload tool
+tmp/
+
+# Go module cache
+go.sum.backup
+
+# Local configuration
+config.local.*
+*.local.json
+*.local.yaml
+*.local.yml
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+
+# Migration files (if using auto-generated ones)
+migrations/generated/
